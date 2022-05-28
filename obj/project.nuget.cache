@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "8jASkMtR5WABqbp00HP/04cyOM7p1iDPx4Bpw4PxxmmTR/IJLKpzDdnUwO8eNG2Z91Hjx1mOvJOWJsJoeEMrTw==",
+  "success": true,
+  "projectFilePath": "/Users/matthew/BARD/bardchat/bardchat.csproj",
+  "expectedPackageFiles": [
+    "/Users/matthew/.nuget/packages/bouncycastle/1.8.9/bouncycastle.1.8.9.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'BouncyCastle 1.8.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "BouncyCastle",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}
