@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Org.BouncyCastle.Crypto.Digests;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 #endregion
@@ -616,6 +618,136 @@ namespace bardchat
             }
 
             return new string(chars);
+        }
+    }
+
+    internal static class BRExtensionMethods
+    {
+        public static string ToAsciiString(this byte[] bytes)
+        {
+            char[] chars = new char[bytes.Length];
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                chars[i] = (char)bytes[i];
+            }
+
+            return new string(chars);
+        }
+
+        public static byte[] ToByteArray(this string s)
+        {
+            byte[] bytes = new byte[s.Length];
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = (byte)s[i];
+            }
+
+            return bytes;
+        }
+
+        public static void Shuffle<T>(this Random rng, T[] array)
+        {
+            int n = array.Length;
+            while (n > 1)
+            {
+                int k = rng.Next(n--);
+                T temp = array[n];
+                array[n] = array[k];
+                array[k] = temp;
+            }
+        }
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
+        public static string Offset(this string text, int amount)
+        {
+            char[] offsetString = text.ToCharArray();
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                int charInt = (Convert.ToInt32(text[i]) + amount);
+                if (charInt < 0)
+                    charInt = 256 + charInt;
+
+                charInt = charInt % 256;
+
+                offsetString[i] = (char)charInt;
+            }
+
+            return new string(offsetString);
+        }
+    }
+
+    internal static class BRUtility
+    {
+        public static Random random = new Random();
+
+        public static string HashText(string text, string salt)
+        {
+            Sha3Digest hashAlgorithm = new Sha3Digest(512);
+            byte[] input = Encoding.ASCII.GetBytes((text + "BARDCODE" + salt));
+
+            hashAlgorithm.BlockUpdate(input, 0, input.Length);
+
+            byte[] result = new byte[64];
+
+            hashAlgorithm.DoFinal(result, 0);
+
+            string hashString = Convert.ToBase64String(result);
+
+            return hashString;
+        }
+
+        public static string RandomStringInt(int length)
+        {
+            const string chars = "0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        public class HexadecimalEncoding
+        {
+            public static string ToHexString(string str)
+            {
+                var sb = new StringBuilder();
+
+                var bytes = Encoding.ASCII.GetBytes(str);
+
+                foreach (var t in bytes)
+                {
+                    sb.Append(t.ToString("X2"));
+                }
+
+                Console.WriteLine(sb.ToString());
+
+                return sb.ToString();
+            }
+
+            public static string FromHexString(string hexString)
+            {
+                var bytes = new byte[hexString.Length / 2];
+
+                for (var i = 0; i < bytes.Length; i++)
+                {
+                    bytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
+                }
+
+                return Encoding.ASCII.GetString(bytes);
+            }
         }
     }
 }

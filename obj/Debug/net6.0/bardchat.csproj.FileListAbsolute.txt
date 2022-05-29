@@ -1,0 +1,17 @@
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.csproj.AssemblyReference.cache
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.GeneratedMSBuildEditorConfig.editorconfig
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.AssemblyInfoInputs.cache
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.AssemblyInfo.cs
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.csproj.CoreCompileInputs.cache
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/bardchat
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/bardchat.deps.json
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/bardchat.runtimeconfig.json
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/bardchat.dll
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/ref/bardchat.dll
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/bardchat.pdb
+/Users/matthew/BARD/bardchat/bin/Debug/net6.0/BouncyCastle.Crypto.dll
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.csproj.CopyComplete
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.dll
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/ref/bardchat.dll
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.pdb
+/Users/matthew/BARD/bardchat/obj/Debug/net6.0/bardchat.genruntimeconfig.cache
