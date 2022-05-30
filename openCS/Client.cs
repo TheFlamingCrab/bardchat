@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace bardchat
 {
-    internal sealed class BRClient
+    internal sealed class Client
     {
+        public List<Chat> chats = new List<Chat>();
+
         private Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         public void LoopConnect()
@@ -42,7 +44,8 @@ namespace bardchat
 
         public void Send(string data)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(data);
+            byte[] buffer = BRC2.EncodeText(data, "hello", 556, 22);
+            //Console.WriteLine("DECODED TEXT IS : " + BRC2.DecodeText(buffer, "hello", 556));
             _clientSocket.Send(buffer);
 
             byte[] receiveBuffer = new byte[_clientSocket.ReceiveBufferSize];
@@ -51,7 +54,10 @@ namespace bardchat
             byte[] resp = new byte[rec];
             Array.Copy(receiveBuffer, resp, rec);
 
-            Console.WriteLine("Received " + Encoding.ASCII.GetString(resp));
+            if (Encoding.ASCII.GetString(resp) == "RCV")
+            {
+                Console.WriteLine("SERVER HAS RECEIVED THE DATA");
+            }
         }
     }
 }

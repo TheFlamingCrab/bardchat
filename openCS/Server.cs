@@ -7,7 +7,7 @@ using System.Net.Sockets;
 
 namespace bardchat
 {
-    internal sealed class BRServer
+    internal sealed class Server
     {
         byte[] _buffer;
         
@@ -16,7 +16,7 @@ namespace bardchat
         private short backlog;
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     
-        public BRServer(short backlog)
+        public Server(short backlog)
         {
             this.backlog = backlog;
         }
@@ -33,6 +33,7 @@ namespace bardchat
         {
             Socket socket = _serverSocket.EndAccept(ar);
             _clientSockets.Add(socket);
+            Console.WriteLine(this._clientSockets.Count);
 
             Console.WriteLine("Client Connected");
 
@@ -52,9 +53,7 @@ namespace bardchat
                 byte[] dataBuffer = new byte[received];
                 Array.Copy(_buffer, dataBuffer, received);
 
-                string text = Encoding.ASCII.GetString(dataBuffer);
-
-                int result = HandleData(text);
+                int result = HandleData(dataBuffer);
 
                 byte[] resp = Encoding.ASCII.GetBytes("RCV");
                 socket.BeginSend(resp, 0, resp.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
@@ -64,6 +63,7 @@ namespace bardchat
             catch
             {
                 Console.WriteLine("Client disconnected");
+                Console.WriteLine(this._clientSockets.Count);
                 socket.Close();
                 socket.Dispose();
             }
@@ -75,9 +75,11 @@ namespace bardchat
             socket.EndSend(ar);
         }
 
-        private int HandleData(string data)
+        private int HandleData(byte[] data)
         {
-            Console.WriteLine(data);
+            Console.WriteLine("WEFJEWFHWENHEVALNFAENLKNJAEVWLKFJNAWLEJLEKFJAW");
+            Console.WriteLine(BRC2.DecodeText(data, "hello", 556));
+
             return 0;
         }
     }

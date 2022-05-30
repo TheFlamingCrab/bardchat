@@ -4,22 +4,46 @@
     {
         static int Main(string[] args)
         {
-            Globals.serverIP = "127.0.0.1";
-            Globals.serverPort = 5002;
+            Console.WriteLine("Client or server? (c or s)");
+            string socketType_i = Console.ReadLine()!;
 
-            BRServer server = new BRServer(5);
-            server.Start();
-            Console.WriteLine("Started server!");
+            Client client;
+            Server server;
 
-            BRClient client1 = new BRClient();
-            client1.LoopConnect();
-            client1.Send("hello from 1");
+            if (socketType_i == "c")
+            {
+                Console.WriteLine("Enter server IP");
+                Globals.serverIP = Console.ReadLine()!;
 
-            BRClient client2 = new BRClient();
-            client2.LoopConnect();
-            client2.Send("hello from 2");
+                Console.WriteLine("Enter server port");
+                string serverPort_i = Console.ReadLine()!;
+                Globals.serverPort = Convert.ToUInt16(serverPort_i);
 
-            Console.ReadKey();
+                client = new Client();
+
+                do
+                {
+                    Console.WriteLine("Enter request for server");
+                    string request_i = Console.ReadLine()!;
+
+                    client?.Send(request_i);
+                }
+                while 
+                    (true);
+            }
+            else if (socketType_i == "s")
+            {
+                Console.WriteLine("Starting server...");
+                server = new Server(5);
+                server.Start();
+                Console.WriteLine("Server started.");
+            }
+            else
+            {
+                Console.WriteLine("That is not a valid input");
+            }
+
+            Console.ReadLine();
 
             return 0;
         }

@@ -72,9 +72,6 @@ namespace bardchat
         {
             int b = 88;
 
-            Console.WriteLine("Decrypting...");
-            Console.WriteLine("IV is " + iv);
-
             int blockCount = (int)Math.Ceiling(((decimal)bytes.Length / (decimal)(b)));
 
             byte[] text = bytes;
@@ -217,10 +214,6 @@ namespace bardchat
 
             if (fBlockSize < 22)
                 Console.WriteLine("Block size must be at least 22");
-
-            Console.WriteLine("Encrypting...");
-
-            Console.WriteLine("IV is " + iv);
 
             int b = 18;
 
