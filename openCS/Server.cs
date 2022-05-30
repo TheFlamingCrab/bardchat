@@ -77,8 +77,7 @@ namespace bardchat
 
         private int HandleData(byte[] data)
         {
-            Console.WriteLine("WEFJEWFHWENHEVALNFAENLKNJAEVWLKFJNAWLEJLEKFJAW");
-            Console.WriteLine(BRC2.DecodeText(data, "hello", 556));
+            Console.WriteLine("Received data from client!");
 
             return 0;
         }
