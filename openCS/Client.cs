@@ -1,4 +1,6 @@
 #region usings
+using System.Security.Cryptography;
+
 using System.Text;
 
 using System.Net;
@@ -11,9 +13,22 @@ namespace bardchat
 {
     internal sealed class Client
     {
-        public List<Chat> chats = new List<Chat>();
+        public List<Chat> chats { get; private set; }
+
+        public byte[] key { get; private set; } = new byte[64];
 
         private Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        public Client()
+        {
+            chats = new List<Chat>();
+        }
+
+        public void GenerateNewKey()
+        {
+            RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            rng.GetBytes(key);
+        }
 
         public void LoopConnect()
         {
@@ -36,6 +51,10 @@ namespace bardchat
 
             Console.WriteLine("Connected");
         }
+
+        public void AddChat(Chat chat) => chats.Add(chat);
+
+        public void RemoveChat(Chat chat) => chats.Remove(chat);
 
         public void Disconnect()
         {

@@ -1,6 +1,6 @@
 namespace bardchat
 {
-    internal sealed class Contact
+    internal sealed record class Contact
     {
         public string name;
         public Guid id;
