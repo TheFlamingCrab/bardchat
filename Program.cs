@@ -14,10 +14,10 @@
 
             if (socketType_i == "c")
             {
-                Console.WriteLine("Enter server IP");
+                Console.WriteLine("Enter server IP: ");
                 Globals.serverIP = Console.ReadLine()!;
 
-                Console.WriteLine("Enter server port");
+                Console.WriteLine("Enter server port: ");
                 string serverPort_i = Console.ReadLine()!;
                 Globals.serverPort = Convert.ToUInt16(serverPort_i);
 
@@ -27,7 +27,7 @@
 
                 do
                 {
-                    Console.WriteLine("Enter request for server");
+                    Console.WriteLine("Enter data to send to the server: ");
                     string request_i = Console.ReadLine()!;
 
                     client?.Send(request_i);
@@ -39,14 +39,12 @@
             {
                 Console.WriteLine("Starting server...");
                 server = new Server(5);
-                Console.WriteLine(Globals.serverPort);
+                Console.WriteLine("Server port: " + Globals.serverPort);
                 server.Start();
-                Console.WriteLine("Server started.");
+                Console.WriteLine("Server started");
             }
             else
-            {
-                Console.WriteLine("That is not a valid input");
-            }
+                Console.WriteLine("Invalid option");
 
             Console.ReadLine();
 

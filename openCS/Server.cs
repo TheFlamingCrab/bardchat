@@ -33,7 +33,7 @@ namespace bardchat
         {
             Socket socket = _serverSocket.EndAccept(ar);
             _clientSockets.Add(socket);
-            Console.WriteLine(this._clientSockets.Count);
+            Console.WriteLine("Old client count: ", this._clientSockets.Count);
 
             Console.WriteLine("Client Connected");
 
@@ -63,7 +63,7 @@ namespace bardchat
             catch
             {
                 Console.WriteLine("Client disconnected");
-                Console.WriteLine(this._clientSockets.Count);
+                Console.WriteLine("Client count: " + this._clientSockets.Count);
                 socket.Close();
                 socket.Dispose();
             }

@@ -34,19 +34,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/matthew/.nuget/packages/": {}
+    "C:\\Users\\drill\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/matthew/BARD/bardchat/bardchat.csproj",
+      "projectUniqueName": "C:\\Users\\drill\\OneDrive - education.wa.edu.au\\Documents\\bard\\bardchat\\bardchat.csproj",
       "projectName": "bardchat",
-      "projectPath": "/Users/matthew/BARD/bardchat/bardchat.csproj",
-      "packagesPath": "/Users/matthew/.nuget/packages/",
-      "outputPath": "/Users/matthew/BARD/bardchat/obj/",
+      "projectPath": "C:\\Users\\drill\\OneDrive - education.wa.edu.au\\Documents\\bard\\bardchat\\bardchat.csproj",
+      "packagesPath": "C:\\Users\\drill\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\drill\\OneDrive - education.wa.edu.au\\Documents\\bard\\bardchat\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/matthew/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\drill\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -90,7 +90,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/6.0.103/libexec/sdk/6.0.103/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   },

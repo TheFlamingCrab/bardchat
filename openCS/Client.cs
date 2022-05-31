@@ -19,6 +19,8 @@ namespace bardchat
 
         private Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
+        private const int maxConnectionAttempts = 30;
+
         public Client()
         {
             chats = new List<Chat>();
@@ -34,7 +36,7 @@ namespace bardchat
         {
             int attempts = 0;
 
-            while (!_clientSocket.Connected)
+            while (!_clientSocket.Connected && attempts < maxConnectionAttempts)
             {
                 try
                 {
@@ -49,7 +51,7 @@ namespace bardchat
                 }
             }
 
-            Console.WriteLine("Connected");
+            Console.WriteLine("Connected to server " + Globals.serverIP + " on port " + Globals.serverPort);
         }
 
         public void AddChat(Chat chat) => chats.Add(chat);
@@ -75,7 +77,7 @@ namespace bardchat
 
             if (Encoding.ASCII.GetString(resp) == "RCV")
             {
-                Console.WriteLine("SERVER HAS RECEIVED THE DATA");
+                Console.WriteLine("Server received message");
             }
         }
     }

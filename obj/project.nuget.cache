@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "8jASkMtR5WABqbp00HP/04cyOM7p1iDPx4Bpw4PxxmmTR/IJLKpzDdnUwO8eNG2Z91Hjx1mOvJOWJsJoeEMrTw==",
+  "dgSpecHash": "TfsLywbbWYZuj0HgGWyBs+5KMiu5puqn0LmNrIE30XgFAAXgl0Uur4UsMJI5DvbAlwuI0En6GLii0ZYIuX76rw==",
   "success": true,
-  "projectFilePath": "/Users/matthew/BARD/bardchat/bardchat.csproj",
+  "projectFilePath": "C:\\Users\\drill\\OneDrive - education.wa.edu.au\\Documents\\bard\\bardchat\\bardchat.csproj",
   "expectedPackageFiles": [
-    "/Users/matthew/.nuget/packages/bouncycastle/1.8.9/bouncycastle.1.8.9.nupkg.sha512"
+    "C:\\Users\\drill\\.nuget\\packages\\bouncycastle\\1.8.9\\bouncycastle.1.8.9.nupkg.sha512"
   ],
   "logs": [
     {
