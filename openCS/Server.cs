@@ -148,8 +148,6 @@ namespace bardchat
                     return GetStringKey(publKey);
             }
 
-            Console.WriteLine(returnValue);
-
             return returnValue;
         }
     }
