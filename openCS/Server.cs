@@ -17,9 +17,6 @@ namespace bardchat
         
         private List<Socket> _clientSockets = new List<Socket>();
 
-        // Permanent list of all users registered
-        private SortedSet<byte[]> _permClients = new SortedSet<byte[]>();
-
         // List of users currently online
         private SortedSet<byte[]> _currentClients = new SortedSet<byte[]>();
 
@@ -109,12 +106,18 @@ namespace bardchat
             string instruction = text[0..4];
             Console.WriteLine(instruction);
             // Is 6 instead of 5 becuase instruction and parameter is seperated by a colon
-            byte[] parameter = data[6..];
 
-            //TODO: MAKE THIS MORE EFFICIENT
-            //THIS IS VERY SLOW, FIX THIS ASAP
+            byte[] parameter = default!;
+            int index = -1;
+            if (data.Length > 6)
+            {
+                parameter = data[6..];
 
-            int index = _currentClients.ToList().IndexOf(parameter);
+
+                //TODO: MAKE THIS MORE EFFICIENT
+                //THIS IS VERY SLOW, FIX THIS ASAP
+                index = _currentClients.ToList().IndexOf(parameter);
+            }
 
             string returnValue = string.Empty;
 
@@ -132,16 +135,17 @@ namespace bardchat
                     returnValue = $"{address}:{port}";
                     break;
                 // Register on the server (anonymous registration)
-                // Return the servers RSA public key
+                // Return a receive message
                 case "REGG":
                     Console.WriteLine("REGISTERING");
-                    if (index == -1)
-                        _permClients.Add(parameter);
 
                     _currentClients.Add(parameter);
 
-                    returnValue = GetStringKey(publKey);
+                    returnValue = "RCV";
                     break;
+                // Returns the servers public key
+                case "GKEY":
+                    return GetStringKey(publKey);
             }
 
             Console.WriteLine(returnValue);
