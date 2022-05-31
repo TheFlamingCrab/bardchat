@@ -3,6 +3,10 @@ using System.Text;
 
 using System.Net;
 using System.Net.Sockets;
+
+using System.Xml.Serialization;
+
+using System.Security.Cryptography;
 #endregion
 
 namespace bardchat
@@ -13,18 +17,32 @@ namespace bardchat
         
         private List<Socket> _clientSockets = new List<Socket>();
 
-        private short backlog;
+        // Permanent list of all users registered
+        private SortedSet<byte[]> _permClients = new SortedSet<byte[]>();
+
+        // List of users currently online
+        private SortedSet<byte[]> _currentClients = new SortedSet<byte[]>();
+
+        private short _backlog;
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        private RSACryptoServiceProvider rsa;
+        private RSAParameters privKey;
+        private RSAParameters publKey;
     
-        public Server(short backlog)
+        public Server(short _backlog)
         {
-            this.backlog = backlog;
+            this._backlog = _backlog;
+            rsa = new RSACryptoServiceProvider(2048);
+            privKey = rsa.ExportParameters(true);
+            publKey = rsa.ExportParameters(false);
+            Console.WriteLine(GetStringKey(publKey));
         }
 
         public void Start()
         {
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Globals.serverPort));
-            _serverSocket.Listen(backlog);
+            _serverSocket.Listen(_backlog);
 
             _serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), null);
         }
@@ -53,9 +71,10 @@ namespace bardchat
                 byte[] dataBuffer = new byte[received];
                 Array.Copy(_buffer, dataBuffer, received);
 
-                int result = HandleData(dataBuffer);
+                string result = HandleData(dataBuffer);
+                Console.WriteLine(result);
 
-                byte[] resp = Encoding.ASCII.GetBytes("RCV");
+                byte[] resp = Encoding.ASCII.GetBytes(result);
                 socket.BeginSend(resp, 0, resp.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
 
                 socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
@@ -75,11 +94,59 @@ namespace bardchat
             socket.EndSend(ar);
         }
 
-        private int HandleData(byte[] data)
+        private string GetStringKey(RSAParameters key)
         {
-            Console.WriteLine("Received data from client!");
+            StringWriter sw = new StringWriter();
+            XmlSerializer xs = new XmlSerializer(typeof(RSAParameters));
+            xs.Serialize(sw, key);
+            return sw.ToString();
+        }
 
-            return 0;
+        private string HandleData(byte[] data)
+        {
+            string text = Encoding.ASCII.GetString(data);
+
+            string instruction = text[0..4];
+            Console.WriteLine(instruction);
+            // Is 6 instead of 5 becuase instruction and parameter is seperated by a colon
+            byte[] parameter = data[6..];
+
+            //TODO: MAKE THIS MORE EFFICIENT
+            //THIS IS VERY SLOW, FIX THIS ASAP
+
+            int index = _currentClients.ToList().IndexOf(parameter);
+
+            string returnValue = string.Empty;
+
+            switch (instruction)
+            {
+                // Initialise a conversation
+                // Return Socket information on success, otherwise return NTFN (user not found)
+                case "INIT":
+                    IPEndPoint socketEndPoint = (_clientSockets[index].RemoteEndPoint as IPEndPoint)!;
+                    string address = socketEndPoint.Address.ToString();
+                    string port = socketEndPoint.Port.ToString();
+
+                    Console.WriteLine(index);
+
+                    returnValue = $"{address}:{port}";
+                    break;
+                // Register on the server (anonymous registration)
+                // Return the servers RSA public key
+                case "REGG":
+                    Console.WriteLine("REGISTERING");
+                    if (index == -1)
+                        _permClients.Add(parameter);
+
+                    _currentClients.Add(parameter);
+
+                    returnValue = GetStringKey(publKey);
+                    break;
+            }
+
+            Console.WriteLine(returnValue);
+
+            return returnValue;
         }
     }
 }

@@ -15,7 +15,10 @@ namespace bardchat
     {
         public List<Chat> chats { get; private set; }
 
-        public byte[] key { get; private set; } = new byte[64];
+        public byte[] id { get; private set; } = new byte[64];
+
+        private RSACryptoServiceProvider rsa;
+        private RSAParameters serverKey;
 
         private Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -24,10 +27,27 @@ namespace bardchat
             chats = new List<Chat>();
         }
 
-        public void GenerateNewKey()
+        private byte[] RSAEncrypt(byte[] data)
+        {
+            byte[] result = new byte[data.Length];
+            rsa.Encrypt(result, false);
+            return result;
+        }
+
+        private byte[] RSADecrypt(byte[] data)
+        {
+            byte[] result = new byte[data.Length];
+            rsa.Decrypt(data, false);
+            return result;
+        }
+
+        public void GenerateNewId()
         {
             RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            rng.GetBytes(key);
+            
+            rng.GetBytes(id);
+
+            Console.WriteLine(id);
         }
 
         public void LoopConnect()
@@ -61,10 +81,15 @@ namespace bardchat
             _clientSocket.Disconnect(false);
         }
 
+        public void SendInitRequest(Guid id)
+        {
+            Send("INIT:" + id);
+        }
+
         public void Send(string data)
         {
-            byte[] buffer = BRC2.EncodeText(data, "hello", 556, 22);
-            //Console.WriteLine("DECODED TEXT IS : " + BRC2.DecodeText(buffer, "hello", 556));
+            byte[] buffer = Encoding.ASCII.GetBytes(data);//BRC2.EncodeText(data, "hello", 556, 22);
+
             _clientSocket.Send(buffer);
 
             byte[] receiveBuffer = new byte[_clientSocket.ReceiveBufferSize];
@@ -73,7 +98,11 @@ namespace bardchat
             byte[] resp = new byte[rec];
             Array.Copy(receiveBuffer, resp, rec);
 
-            if (Encoding.ASCII.GetString(resp) == "RCV")
+            string response = Encoding.ASCII.GetString(resp);
+
+            Console.WriteLine(response);
+
+            if (response == "RCV")
             {
                 Console.WriteLine("SERVER HAS RECEIVED THE DATA");
             }
