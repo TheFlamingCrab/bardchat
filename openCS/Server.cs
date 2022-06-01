@@ -76,8 +76,9 @@ namespace bardchat
 
                 socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 Console.WriteLine("Client disconnected");
                 Console.WriteLine(this._clientSockets.Count);
                 socket.Close();
@@ -102,6 +103,17 @@ namespace bardchat
         private string HandleData(byte[] data)
         {
             string text = Encoding.ASCII.GetString(data);
+
+            char c = text[0];
+            if (c == 'D')
+                text = Encoding.ASCII.GetString(rsa.Decrypt(data[1..], false));
+            else if (c == 'N')
+                text = text[1..];
+            else
+            {
+                Console.WriteLine("Invalid char code at index 0");
+                return "INV";
+            }
 
             string instruction = text[0..4];
             Console.WriteLine(instruction);

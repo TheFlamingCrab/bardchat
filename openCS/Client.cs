@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 
 using System.Threading.Tasks;
+
+using System.Xml.Serialization;
 #endregion
 
 namespace bardchat
@@ -17,14 +19,19 @@ namespace bardchat
 
         public byte[] id { get; private set; } = new byte[64];
 
+        private bool hasServerKey = false;
         private RSACryptoServiceProvider rsa;
         private RSAParameters serverKey;
+
+        private string lastCommand = string.Empty;
 
         private Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         public Client()
         {
             chats = new List<Chat>();
+
+            rsa = new RSACryptoServiceProvider();
         }
 
         private byte[] RSAEncrypt(byte[] data)
@@ -88,9 +95,26 @@ namespace bardchat
 
         public void Send(string data)
         {
+            lastCommand = data;
+
             byte[] buffer = Encoding.ASCII.GetBytes(data);//BRC2.EncodeText(data, "hello", 556, 22);
 
-            _clientSocket.Send(buffer);
+            if (hasServerKey)
+                buffer = RSAEncrypt(buffer);
+
+            //TODO: this takes up a lot of space on the heap, fix it if possible
+
+            byte[] tmpBuffer = new byte[buffer.Length + 1];
+            Buffer.BlockCopy(buffer, 0, tmpBuffer, 1, buffer.Length);
+
+            if (hasServerKey)
+                tmpBuffer[0] = (byte)'D';
+            else
+                tmpBuffer[0] = (byte)'N';
+            
+            Console.WriteLine(Encoding.ASCII.GetString(tmpBuffer));
+
+            _clientSocket.Send(tmpBuffer);
 
             byte[] receiveBuffer = new byte[_clientSocket.ReceiveBufferSize];
             int rec = _clientSocket.Receive(receiveBuffer);
@@ -101,6 +125,16 @@ namespace bardchat
             string response = Encoding.ASCII.GetString(resp);
 
             Console.WriteLine(response);
+
+            if (lastCommand.StartsWith("GKEY"))
+            {
+                StringReader sr = new StringReader(response);
+                XmlSerializer xs = new XmlSerializer(typeof(RSAParameters));
+                this.serverKey = (RSAParameters)xs.Deserialize(sr)!;
+                rsa.ImportParameters(serverKey);
+                hasServerKey = true;
+                Console.WriteLine("RECEIVED SERVER KEY");
+            }
 
             if (response == "RCV")
             {
