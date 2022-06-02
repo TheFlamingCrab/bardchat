@@ -24,16 +24,16 @@ namespace bardchat
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private RSACryptoServiceProvider rsa;
-        private RSAParameters privKey;
-        private RSAParameters publKey;
-    
+        private string privKey;
+        private string publKey;
+
         public Server(short _backlog)
         {
             this._backlog = _backlog;
             rsa = new RSACryptoServiceProvider(2048);
-            privKey = rsa.ExportParameters(true);
-            publKey = rsa.ExportParameters(false);
-            Console.WriteLine(GetStringKey(publKey));
+            privKey = rsa.ToXmlString(true);
+            publKey = rsa.ToXmlString(false);
+            Console.WriteLine(rsa.ToXmlString(false));
         }
 
         public void Start()
@@ -68,10 +68,11 @@ namespace bardchat
                 byte[] dataBuffer = new byte[received];
                 Array.Copy(_buffer, dataBuffer, received);
 
-                string result = HandleData(dataBuffer);
-                Console.WriteLine(result);
+                byte[] result = HandleData(dataBuffer);
+                Console.WriteLine(Encoding.ASCII.GetString(result));
 
-                byte[] resp = Encoding.ASCII.GetBytes(result);
+                // fix this
+                byte[] resp = result;
                 socket.BeginSend(resp, 0, resp.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
 
                 socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
@@ -92,31 +93,31 @@ namespace bardchat
             socket.EndSend(ar);
         }
 
-        private string GetStringKey(RSAParameters key)
-        {
-            StringWriter sw = new StringWriter();
-            XmlSerializer xs = new XmlSerializer(typeof(RSAParameters));
-            xs.Serialize(sw, key);
-            return sw.ToString();
-        }
-
-        private string HandleData(byte[] data)
+        private byte[] HandleData(byte[] data)
         {
             string text = Encoding.ASCII.GetString(data);
 
             char c = text[0];
+
             if (c == 'D')
-                text = Encoding.ASCII.GetString(rsa.Decrypt(data[1..], false));
+            {   
+                data = data[1..];
+                Console.WriteLine("DATA LENGTH IS " + data.Length);
+                byte[] decryptBuffer = rsa.Decrypt(data, false);
+                text = Encoding.ASCII.GetString(decryptBuffer);
+                Console.WriteLine(text);
+            }
             else if (c == 'N')
                 text = text[1..];
             else
             {
                 Console.WriteLine("Invalid char code at index 0");
-                return "INV";
+                return Encoding.ASCII.GetBytes("INV");
             }
 
             string instruction = text[0..4];
             Console.WriteLine(instruction);
+            
             // Is 6 instead of 5 becuase instruction and parameter is seperated by a colon
 
             byte[] parameter = default!;
@@ -125,13 +126,12 @@ namespace bardchat
             {
                 parameter = data[6..];
 
-
                 //TODO: MAKE THIS MORE EFFICIENT
-                //THIS IS VERY SLOW, FIX THIS ASAP
+                //THIS IS VERY SLOW, FIX THIS
                 index = _currentClients.ToList().IndexOf(parameter);
             }
 
-            string returnValue = string.Empty;
+            byte[] returnValue = Array.Empty<byte>();
 
             switch (instruction)
             {
@@ -144,7 +144,7 @@ namespace bardchat
 
                     Console.WriteLine(index);
 
-                    returnValue = $"{address}:{port}";
+                    returnValue = Encoding.ASCII.GetBytes($"{address}:{port}");
                     break;
                 // Register on the server (anonymous registration)
                 // Return a receive message
@@ -153,11 +153,15 @@ namespace bardchat
 
                     _currentClients.Add(parameter);
 
-                    returnValue = "RCV";
+                    returnValue = Encoding.ASCII.GetBytes("RCV");
                     break;
                 // Returns the servers public key
                 case "GKEY":
-                    return GetStringKey(publKey);
+                    string xmlString = rsa.ToXmlString(false);
+                    return Encoding.ASCII.GetBytes(xmlString);
+
+                default:
+                    return Encoding.ASCII.GetBytes("INV");
             }
 
             return returnValue;

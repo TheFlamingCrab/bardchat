@@ -21,7 +21,6 @@ namespace bardchat
 
         private bool hasServerKey = false;
         private RSACryptoServiceProvider rsa;
-        private RSAParameters serverKey;
 
         private string lastCommand = string.Empty;
 
@@ -37,14 +36,14 @@ namespace bardchat
         private byte[] RSAEncrypt(byte[] data)
         {
             byte[] result = new byte[data.Length];
-            rsa.Encrypt(result, false);
+            result = rsa.Encrypt(data, false);
             return result;
         }
 
         private byte[] RSADecrypt(byte[] data)
         {
             byte[] result = new byte[data.Length];
-            rsa.Decrypt(data, false);
+            result = rsa.Decrypt(data, false);
             return result;
         }
 
@@ -100,7 +99,10 @@ namespace bardchat
             byte[] buffer = Encoding.ASCII.GetBytes(data);//BRC2.EncodeText(data, "hello", 556, 22);
 
             if (hasServerKey)
-                buffer = RSAEncrypt(buffer);
+            {
+                buffer = RSAEncrypt(buffer); 
+                Console.WriteLine("Encrypted");
+            }
 
             //TODO: this takes up a lot of space on the heap, fix it if possible
 
@@ -114,6 +116,7 @@ namespace bardchat
             
             Console.WriteLine(Encoding.ASCII.GetString(tmpBuffer));
 
+            Console.WriteLine(tmpBuffer.Length);
             _clientSocket.Send(tmpBuffer);
 
             byte[] receiveBuffer = new byte[_clientSocket.ReceiveBufferSize];
@@ -128,10 +131,8 @@ namespace bardchat
 
             if (lastCommand.StartsWith("GKEY"))
             {
-                StringReader sr = new StringReader(response);
-                XmlSerializer xs = new XmlSerializer(typeof(RSAParameters));
-                this.serverKey = (RSAParameters)xs.Deserialize(sr)!;
-                rsa.ImportParameters(serverKey);
+                rsa.FromXmlString(response);
+                Console.WriteLine(rsa.ToXmlString(false));
                 hasServerKey = true;
                 Console.WriteLine("RECEIVED SERVER KEY");
             }
