@@ -18,8 +18,7 @@ namespace bardchat
         private List<Socket> _clientSockets = new List<Socket>();
 
         // List of users currently online
-        private SortedSet<byte[]> _currentClients = new SortedSet<byte[]>();
-
+        private Dictionary<byte[], (byte[], IPAddress, int)> _currentClients = new Dictionary<byte[], (byte[], IPAddress, int)>();
         private short _backlog;
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -68,7 +67,8 @@ namespace bardchat
                 byte[] dataBuffer = new byte[received];
                 Array.Copy(_buffer, dataBuffer, received);
 
-                byte[] result = HandleData(dataBuffer);
+                IPEndPoint socketEndPoint = (socket.RemoteEndPoint as IPEndPoint)!;
+                byte[] result = HandleData(dataBuffer, socketEndPoint.Address, socketEndPoint.Port);
                 Console.WriteLine(Encoding.ASCII.GetString(result));
 
                 // fix this
@@ -93,8 +93,11 @@ namespace bardchat
             socket.EndSend(ar);
         }
 
-        private byte[] HandleData(byte[] data)
+        private byte[] HandleData(byte[] data, IPAddress address, int port)
         {
+            Console.WriteLine(address);
+            Console.WriteLine(port);
+
             string text = Encoding.ASCII.GetString(data);
 
             char c = text[0];
@@ -117,18 +120,17 @@ namespace bardchat
 
             string instruction = text[0..4];
             Console.WriteLine(instruction);
-            
-            // Is 6 instead of 5 becuase instruction and parameter is seperated by a colon
 
             byte[] parameter = default!;
             int index = -1;
+
             if (data.Length > 6)
             {
-                parameter = data[6..];
+                parameter = Encoding.ASCII.GetBytes(text[5..]);
 
                 //TODO: MAKE THIS MORE EFFICIENT
                 //THIS IS VERY SLOW, FIX THIS
-                index = _currentClients.ToList().IndexOf(parameter);
+                index = _currentClients.Keys.ToList().IndexOf(parameter);
             }
 
             byte[] returnValue = Array.Empty<byte>();
@@ -136,22 +138,70 @@ namespace bardchat
             switch (instruction)
             {
                 // Initialise a conversation
-                // Return Socket information on success, otherwise return NTFN (user not found)
+                // Return Socket information on success, otherwise return UNF (user not found)
                 case "INIT":
-                    IPEndPoint socketEndPoint = (_clientSockets[index].RemoteEndPoint as IPEndPoint)!;
-                    string address = socketEndPoint.Address.ToString();
-                    string port = socketEndPoint.Port.ToString();
-
                     Console.WriteLine(index);
-
+                    
                     returnValue = Encoding.ASCII.GetBytes($"{address}:{port}");
                     break;
+                // Agree on a symmetric key to use for further communication
+                case "AGRE":
+                    //TODO: This is bad, like really bad, please do something about it
+                    // most likely vulnerable to IP spoofing :/
+
+                    Console.WriteLine("PARRAMETER LENGTH IS : " + parameter.Length);
+
+                    bool hasPermission = false;
+
+                    byte[] id = default!;
+                    IPAddress dictionaryAddress = default!;
+                    int dictionaryPort = default!;
+
+                    foreach(var k in _currentClients)
+                    {
+                        if (k.Value.Item2.ToString() == address.ToString() && k.Value.Item3 == port)
+                        {
+                            Console.WriteLine(k.Value.Item2);
+                            Console.WriteLine(address);
+                            Console.WriteLine(k.Value.Item3);
+                            Console.WriteLine(port);
+                            hasPermission = true;
+                            id = k.Key;
+                            dictionaryAddress = k.Value.Item2;
+                            dictionaryPort = k.Value.Item3;
+                        }
+                    }
+                    
+                    Console.WriteLine("PERMISSION : " + hasPermission);
+
+                    if (hasPermission)
+                        _currentClients[id] = (parameter, dictionaryAddress, dictionaryPort);
+
+                    foreach( var v in _currentClients)
+                    {
+                        Console.WriteLine("KEY : " + v.Key);
+                        Console.WriteLine("SYMMETRIC KEY : ");
+                        for (int i = 0; i < v.Value.Item1.Length; i++)
+                        {
+                            Console.Write((char)v.Value.Item1[i]);
+                        }
+                        Console.WriteLine();
+                    }
+                    if (hasPermission)
+                        // agree to key update
+                        returnValue = Encoding.ASCII.GetBytes("AGR");
+                    else
+                        // refuse key update
+                        returnValue = Encoding.ASCII.GetBytes("REF");
+
+                    break;
+
                 // Register on the server (anonymous registration)
                 // Return a receive message
                 case "REGG":
                     Console.WriteLine("REGISTERING");
 
-                    _currentClients.Add(parameter);
+                    _currentClients[parameter] = (null, address, port)!;
 
                     returnValue = Encoding.ASCII.GetBytes("RCV");
                     break;
