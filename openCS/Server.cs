@@ -22,17 +22,22 @@ namespace bardchat
         private short _backlog;
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        private RSACryptoServiceProvider rsa;
-        private string privKey;
-        private string publKey;
+        private RSACryptoServiceProvider _rsa;
+        private string _privKey;
+        private string _publKey;
+
+        private static readonly byte[] MSG_RECEIVE = Encoding.ASCII.GetBytes("RCV");
+        private static readonly byte[] MSG_INVALID = Encoding.ASCII.GetBytes("INV");
+        private static readonly byte[] MSG_AGREE = Encoding.ASCII.GetBytes("AGR");
+        private static readonly byte[] MSG_REFUSE = Encoding.ASCII.GetBytes("REF");
 
         public Server(short _backlog)
         {
             this._backlog = _backlog;
-            rsa = new RSACryptoServiceProvider(2048);
-            privKey = rsa.ToXmlString(true);
-            publKey = rsa.ToXmlString(false);
-            Console.WriteLine(rsa.ToXmlString(false));
+            _rsa = new RSACryptoServiceProvider(2048);
+            _privKey = _rsa.ToXmlString(true);
+            _publKey = _rsa.ToXmlString(false);
+            Console.WriteLine(_rsa.ToXmlString(false));
         }
 
         public void Start()
@@ -106,7 +111,7 @@ namespace bardchat
             {   
                 data = data[1..];
                 Console.WriteLine("DATA LENGTH IS " + data.Length);
-                byte[] decryptBuffer = rsa.Decrypt(data, false);
+                byte[] decryptBuffer = _rsa.Decrypt(data, false);
                 text = Encoding.ASCII.GetString(decryptBuffer);
                 Console.WriteLine(text);
             }
@@ -189,10 +194,10 @@ namespace bardchat
                     }
                     if (hasPermission)
                         // agree to key update
-                        returnValue = Encoding.ASCII.GetBytes("AGR");
+                        returnValue = MSG_AGREE;
                     else
                         // refuse key update
-                        returnValue = Encoding.ASCII.GetBytes("REF");
+                        returnValue = MSG_REFUSE;
 
                     break;
 
@@ -203,15 +208,15 @@ namespace bardchat
 
                     _currentClients[parameter] = (null, address, port)!;
 
-                    returnValue = Encoding.ASCII.GetBytes("RCV");
+                    returnValue = MSG_RECEIVE;
                     break;
                 // Returns the servers public key
                 case "GKEY":
-                    string xmlString = rsa.ToXmlString(false);
+                    string xmlString = _rsa.ToXmlString(false);
                     return Encoding.ASCII.GetBytes(xmlString);
 
                 default:
-                    return Encoding.ASCII.GetBytes("INV");
+                    return MSG_INVALID;
             }
 
             return returnValue;
