@@ -51,7 +51,7 @@
             Console.ReadLine();
 
             return 0;
-
+            //is this to set up contacts?
             /*Contact contact1 = new Contact(Guid.NewGuid());
             Contact contact2 = new Contact(Guid.NewGuid());
 
