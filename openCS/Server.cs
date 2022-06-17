@@ -19,6 +19,7 @@ namespace bardchat
 
         // List of users currently online
         private Dictionary<byte[], (byte[], IPAddress, int)> _currentClients = new Dictionary<byte[], (byte[], IPAddress, int)>();
+        
         private short _backlog;
         private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -120,7 +121,7 @@ namespace bardchat
             else
             {
                 Console.WriteLine("Invalid char code at index 0");
-                return Encoding.ASCII.GetBytes("INV");
+                return MSG_INVALID;
             }
 
             string instruction = text[0..4];
@@ -142,11 +143,18 @@ namespace bardchat
 
             switch (instruction)
             {
+                // Authenticates a user anonymously
+                case "AUTH":
+               		Console.WriteLine(BRHasher.HashText("hello", "hello")); 		
+					return Encoding.ASCII.GetBytes("hello");
+
                 // Initialise a conversation
                 // Return Socket information on success, otherwise return UNF (user not found)
                 case "INIT":
                     Console.WriteLine(index);
                     
+					// Temporary return
+
                     returnValue = Encoding.ASCII.GetBytes($"{address}:{port}");
                     break;
                 // Agree on a symmetric key to use for further communication
