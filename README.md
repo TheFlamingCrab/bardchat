@@ -5,4 +5,4 @@ Features - server hosting
 
 Client joining
 
-Made by ALbert
+Made by ALbert, mastersneeza, and BubkisLord.
