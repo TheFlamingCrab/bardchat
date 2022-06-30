@@ -2,6 +2,7 @@
 {
     class Program
     {
+        private byte[] bytemessage;
         static int Main(string[] args)
         {
             Console.WriteLine("Client or server? (c or s)");
@@ -24,15 +25,41 @@
                 client = new Client();
 
                 client.LoopConnect();
-
+                Console.WriteLine("Enter username:");
+                string username = Console.ReadLine();
                 do
                 {
+                    enterRequest:
                     Console.WriteLine("Enter request for server");
                     string request_i = Console.ReadLine()!;
-
+                    if (request_i == "SEND")
+                    {
+                        Console.WriteLine("Enter ip address.");
+                        string inputtedAddress = Console.ReadLine();
+                        /*
+                        if (!_currentClients.Contains(inputtedAddress))
+                        {
+                            Console.WriteLine("IP address is incorrect or not connected.");
+                            goto enterRequest;
+                        }
+                        else
+                        {
+                        */
+                            Console.WriteLine("IP Address is valid. Enter in message:");
+                            string message = Console.ReadLine();
+                            Console.WriteLine("Encrypted message:");
+                            Console.WriteLine(BRHasher.HashText(message, message));
+                            Console.WriteLine("Decrypted message:");
+                            Console.WriteLine(message);
+                            //client?.Send(username, "SENT:"+BRHasher.HashText(message, message).ToString());
+                            bytemessage = Encoding.ASCII.GetBytes(message);
+                            client?.Send("SENT:"+BRC2.EncodeText(bytemessage, message, 0));
+                            goto enterRequest;
+                        //}
+                    }
                     client?.Send(request_i);
                 }
-                while 
+                while
                     (true);
             }
             else if (socketType_i == "s")

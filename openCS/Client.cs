@@ -100,13 +100,14 @@ namespace bardchat
 
             if (hasServerKey)
             {
-                buffer = RSAEncrypt(buffer); 
+                buffer = RSAEncrypt(buffer);
                 Console.WriteLine("Encrypted");
             }
 
             //TODO: this takes up a lot of space on the heap, fix it if possible
 
             byte[] tmpBuffer = new byte[buffer.Length + 1];
+
             Buffer.BlockCopy(buffer, 0, tmpBuffer, 1, buffer.Length);
 
             if (hasServerKey)
@@ -114,8 +115,6 @@ namespace bardchat
             else
                 tmpBuffer[0] = (byte)'N';
             
-            Console.WriteLine(Encoding.ASCII.GetString(tmpBuffer));
-
             Console.WriteLine(tmpBuffer.Length);
             _clientSocket.Send(tmpBuffer);
 

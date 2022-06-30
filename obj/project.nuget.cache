@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "8jASkMtR5WABqbp00HP/04cyOM7p1iDPx4Bpw4PxxmmTR/IJLKpzDdnUwO8eNG2Z91Hjx1mOvJOWJsJoeEMrTw==",
+  "dgSpecHash": "yzcQN3tvD47BiSQrhERNtWirfux35GvD/nnbSo9y+M/9b/4JfjYM5oJiCdy73JQ7BYYCdsl9O+roHfkxxAXxEA==",
   "success": true,
-  "projectFilePath": "/Users/matthew/BARD/bardchat/bardchat.csproj",
+  "projectFilePath": "C:\\Users\\oldfi\\bardchat\\bardchat.csproj",
   "expectedPackageFiles": [
-    "/Users/matthew/.nuget/packages/bouncycastle/1.8.9/bouncycastle.1.8.9.nupkg.sha512"
+    "C:\\Users\\oldfi\\.nuget\\packages\\bouncycastle\\1.8.9\\bouncycastle.1.8.9.nupkg.sha512"
   ],
   "logs": [
     {

@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/Users/matthew/BARD/bardchat/bardchat.csproj": {}
+    "C:\\Users\\oldfi\\bardchat\\bardchat.csproj": {}
   },
   "projects": {
-    "/Users/matthew/BARD/bardchat/bardchat.csproj": {
+    "C:\\Users\\oldfi\\bardchat\\bardchat.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/matthew/BARD/bardchat/bardchat.csproj",
+        "projectUniqueName": "C:\\Users\\oldfi\\bardchat\\bardchat.csproj",
         "projectName": "bardchat",
-        "projectPath": "/Users/matthew/BARD/bardchat/bardchat.csproj",
-        "packagesPath": "/Users/matthew/.nuget/packages/",
-        "outputPath": "/Users/matthew/BARD/bardchat/obj/",
+        "projectPath": "C:\\Users\\oldfi\\bardchat\\bardchat.csproj",
+        "packagesPath": "C:\\Users\\oldfi\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\oldfi\\bardchat\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/matthew/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\oldfi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/6.0.103/libexec/sdk/6.0.103/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.300\\RuntimeIdentifierGraph.json"
         }
       }
     }

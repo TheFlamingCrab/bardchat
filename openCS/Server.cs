@@ -26,11 +26,13 @@ namespace bardchat
         private RSACryptoServiceProvider _rsa;
         private string _privKey;
         private string _publKey;
-
+        private string message;
+        private byte[] bytemessage;
         private static readonly byte[] MSG_RECEIVE = Encoding.ASCII.GetBytes("RCV");
         private static readonly byte[] MSG_INVALID = Encoding.ASCII.GetBytes("INV");
         private static readonly byte[] MSG_AGREE = Encoding.ASCII.GetBytes("AGR");
         private static readonly byte[] MSG_REFUSE = Encoding.ASCII.GetBytes("REF");
+        private static readonly byte[] USER_NOT_FOUND = Encoding.ASCII.GetBytes("UNF");
 
         public Server(short _backlog)
         {
@@ -145,11 +147,18 @@ namespace bardchat
             {
                 // Authenticates a user anonymously
                 case "AUTH":
-               		Console.WriteLine(BRHasher.HashText("hello", "hello")); 		
+               		Console.WriteLine(BRHasher.HashText("hello", "hello"));
 					return Encoding.ASCII.GetBytes("hello");
 
                 // Initialise a conversation
                 // Return Socket information on success, otherwise return UNF (user not found)
+                case "SENT":
+                    Console.WriteLine(text);
+                    message.Replace("SENT:", "").ToString();
+                    Console.WriteLine(message);
+                    bytemessage = Encoding.ASCII.GetBytes(message);
+                    message = BRC2.DecodeText(bytemessage, message, 0);
+                    return Encoding.ASCII.GetBytes($"{address}:{port} typed {message}");
                 case "INIT":
                     Console.WriteLine(index);
                     
@@ -162,7 +171,7 @@ namespace bardchat
                     //TODO: This is bad, like really bad, please do something about it
                     // most likely vulnerable to IP spoofing :/
 
-                    Console.WriteLine("PARRAMETER LENGTH IS : " + parameter.Length);
+                    Console.WriteLine("PARAMETER LENGTH IS : " + parameter.Length);
 
                     bool hasPermission = false;
 
